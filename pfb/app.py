@@ -24,16 +24,22 @@ def main():
         input('Gas', name='gas_limit', type=NUMBER, value='80000', required=True),
         input('Fee', name='fee', type=NUMBER, value='2000', required=True),
     ])
-    resp = submit_pfb(user_data)
-    tx_hash = resp['txhash']
-
-    put_table([
-        ['Type', 'Content'],
-        ['Block Height', resp['height']],
-        ['Tx hash (click to check it on explorer)',
-         put_link(tx_hash, f'https://testnet.mintscan.io/celestia-incentivized-testnet/txs/{tx_hash}')],
-        ['Submit again', put_link('Click to back.', f'http://127.0.0.1:5000')],
-    ])
+    with put_loading():
+        put_text('Waiting for response...')
+        resp = submit_pfb(user_data)
+        # print(resp)
+    if 'txhash' in str(resp):
+        put_text('Successfully submitted!')
+        tx_hash = resp['txhash']
+        put_table([
+            ['Type', 'Content'],
+            ['Block Height', resp['height']],
+            ['Tx hash (click to check it on explorer)',
+             put_link(tx_hash, f'https://testnet.mintscan.io/celestia-incentivized-testnet/txs/{tx_hash}')],
+            ['Submit again', put_link('Click to back.', f'http://127.0.0.1:5000')],
+        ])
+    else:
+        put_text('Submit error. Please check the parameters!')
 
 
 def submit_pfb(data):
