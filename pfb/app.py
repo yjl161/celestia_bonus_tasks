@@ -51,4 +51,4 @@ def submit_pfb(data):
 if __name__ == '__main__':
     app.add_url_rule('/', 'webio_view', webio_view(main), methods=['GET', 'POST', 'OPTIONS'])
     app.wsgi_app = ProxyFix(app.wsgi_app)
-    app.run()
+    app.run(host='0.0.0.0')
