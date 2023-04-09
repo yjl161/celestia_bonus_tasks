@@ -1,3 +1,4 @@
+import flask
 from pywebio.input import *
 from pywebio.output import *
 import requests
@@ -12,7 +13,7 @@ app = Flask(__name__)
 def main():
     img = open('./image/celestia_logo_purple.png', 'rb').read()
     put_image(img)
-    put_markdown('# Celestia UI for submitting PFB tx')
+    put_markdown('# UI for submitting PFB transaction')
 
     user_data = input_group("PFB Parameters", [
         # radio("Schema", name='schema', options=['http', 'https'], value='http', required=True),
@@ -27,19 +28,19 @@ def main():
     with put_loading():
         put_text('Waiting for response...')
         resp = submit_pfb(user_data)
-        # print(resp)
-    if 'txhash' in str(resp):
-        put_text('Successfully submitted!')
-        tx_hash = resp['txhash']
-        put_table([
-            ['Type', 'Content'],
-            ['Block Height', resp['height']],
-            ['Tx hash (click to check it on explorer)',
-             put_link(tx_hash, f'https://testnet.mintscan.io/celestia-incentivized-testnet/txs/{tx_hash}')],
-            ['Submit again', put_link('Click to back.', f'http://127.0.0.1:5000')],
-        ])
-    else:
-        put_text('Submit error. Please check the parameters!')
+
+        if 'txhash' in str(resp):
+            put_text('Successfully submitted!')
+            tx_hash = resp['txhash']
+            put_table([
+                ['Type', 'Content'],
+                ['Block Height', resp['height']],
+                ['Tx hash (click to check it on explorer)',
+                 put_link(tx_hash, f'https://testnet.mintscan.io/celestia-incentivized-testnet/txs/{tx_hash}')],
+                ['Submit again', put_text('Please refresh the page.')],
+            ])
+        else:
+            put_text('Submit error. Please check the parameters!')
 
 
 def submit_pfb(data):
